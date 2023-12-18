@@ -2,6 +2,7 @@
 using EcommerceStore.DTOs;
 using EcommerceStore.Models;
 using EcommerceStore.Services.Iservices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +21,17 @@ namespace EcommerceStore.Controllers
             _products = products;
         }
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO>> GetAllProducts()
         {
+            var Id = User.Claims.FirstOrDefault(x=>x.Type=="sub").Value;
             var Prducts = await _products.GetAllProducts();
             responseDTO.Message = "something";
             responseDTO.Result = Prducts;
             return Ok(responseDTO);
         }
         [HttpPost]
+        [Authorize (Policy="AdminPolicy")]
         public async Task<ActionResult<ResponseDTO>> AddProduct(AddProductsDTO product)
         {
 
